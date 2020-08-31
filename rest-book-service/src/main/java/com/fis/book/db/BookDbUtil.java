@@ -2,7 +2,9 @@ package com.fis.book.db;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -14,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fis.book.model.Book;
 
@@ -58,6 +61,16 @@ public class BookDbUtil {
 		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
 		List<Book> bookList = jdbcTemplate.query("select book_id,book_name,author,AVAILABLE_COPIES,TOTAL_COPIES from book",mapSqlParameterSource,this.rowMapper);
 		return bookList!=null && !bookList.isEmpty()?bookList:null;
+	}
+
+
+	public void updateBook(Book bookToBeUpdated) {
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+		mapSqlParameterSource.addValue("bookId", bookToBeUpdated.getBookId());
+		String updateQuery = "update book set AVAILABLE_COPIES -1 where book_id = :bookId ";
+		jdbcTemplate.update(updateQuery,  mapSqlParameterSource);
+		
+
 	}
 	public DataSource getDataSource() {
 		return dataSource;
